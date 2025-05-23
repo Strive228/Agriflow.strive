@@ -44,6 +44,74 @@ const Dashboard = {
         });
     },
 
+    // Récupération des statistiques
+    async fetchStats() {
+        try {
+            const response = await fetch('/agriflow/api/orders/stats');
+            const data = await response.json();
+
+            if (data.status === 'success') {
+                return data.data;
+            } else {
+                throw new Error(data.message);
+            }
+        } catch (error) {
+            console.error('Erreur lors de la récupération des statistiques:', error);
+            throw error;
+        }
+    },
+
+    // Récupération des commandes
+    async fetchOrders() {
+        try {
+            const response = await fetch(`/agriflow/api/orders?page=${this.state.currentPage}&per_page=${this.state.itemsPerPage}`);
+            const data = await response.json();
+
+            if (data.status === 'success') {
+                return data.data;
+            } else {
+                throw new Error(data.message);
+            }
+        } catch (error) {
+            console.error('Erreur lors de la récupération des commandes:', error);
+            throw error;
+        }
+    },
+
+    // Récupération des livraisons
+    async fetchDeliveries() {
+        try {
+            const response = await fetch(`/agriflow/api/deliveries?page=${this.state.currentPage}&per_page=${this.state.itemsPerPage}`);
+            const data = await response.json();
+
+            if (data.status === 'success') {
+                return data.data;
+            } else {
+                throw new Error(data.message);
+            }
+        } catch (error) {
+            console.error('Erreur lors de la récupération des livraisons:', error);
+            throw error;
+        }
+    },
+
+    // Récupération des favoris
+    async fetchFavorites() {
+        try {
+            const response = await fetch(`/agriflow/api/favorites?page=${this.state.currentPage}&per_page=${this.state.itemsPerPage}`);
+            const data = await response.json();
+
+            if (data.status === 'success') {
+                return data.data;
+            } else {
+                throw new Error(data.message);
+            }
+        } catch (error) {
+            console.error('Erreur lors de la récupération des favoris:', error);
+            throw error;
+        }
+    },
+
     // Chargement des données initiales
     async loadDashboardData() {
         try {
@@ -104,15 +172,9 @@ const Dashboard = {
     // Chargement des commandes
     async loadOrders() {
         try {
-            const response = await fetch('/agriflow/api/orders');
-            const data = await response.json();
-
-            if (data.status === 'success') {
-                this.state.orders = data.data;
-                this.updateOrdersList(data.data);
-            } else {
-                throw new Error(data.message);
-            }
+            const orders = await this.fetchOrders();
+            this.state.orders = orders;
+            this.updateOrdersList(orders);
         } catch (error) {
             console.error('Erreur lors du chargement des commandes:', error);
             this.showError('Erreur lors du chargement des commandes');
@@ -122,15 +184,9 @@ const Dashboard = {
     // Chargement des livraisons
     async loadDeliveries() {
         try {
-            const response = await fetch('/agriflow/api/deliveries');
-            const data = await response.json();
-
-            if (data.status === 'success') {
-                this.state.deliveries = data.data;
-                this.updateDeliveriesList(data.data);
-            } else {
-                throw new Error(data.message);
-            }
+            const deliveries = await this.fetchDeliveries();
+            this.state.deliveries = deliveries;
+            this.updateDeliveriesList(deliveries);
         } catch (error) {
             console.error('Erreur lors du chargement des livraisons:', error);
             this.showError('Erreur lors du chargement des livraisons');
@@ -140,18 +196,32 @@ const Dashboard = {
     // Chargement des favoris
     async loadFavorites() {
         try {
-            const response = await fetch('/agriflow/api/favorites');
+            const favorites = await this.fetchFavorites();
+            this.state.favorites = favorites;
+            this.updateFavoritesList(favorites);
+        } catch (error) {
+            console.error('Erreur lors du chargement des favoris:', error);
+            this.showError('Erreur lors du chargement des favoris');
+        }
+    },
+
+    // Gestion des favoris
+    async toggleFavorite(productId) {
+        try {
+            const response = await fetch(`/agriflow/api/favorites/${productId}`, {
+                method: 'DELETE'
+            });
             const data = await response.json();
 
             if (data.status === 'success') {
-                this.state.favorites = data.data.favorites;
-                this.updateFavoritesList(data.data.favorites);
+                // Recharger la liste des favoris
+                await this.loadFavorites();
             } else {
                 throw new Error(data.message);
             }
         } catch (error) {
-            console.error('Erreur lors du chargement des favoris:', error);
-            this.showError('Erreur lors du chargement des favoris');
+            console.error('Erreur lors de la gestion des favoris:', error);
+            this.showError('Erreur lors de la gestion des favoris');
         }
     },
 
@@ -231,26 +301,6 @@ const Dashboard = {
         `).join('');
     },
 
-    // Gestion des favoris
-    async toggleFavorite(productId) {
-        try {
-            const response = await fetch(`/agriflow/api/favorites/${productId}`, {
-                method: 'DELETE'
-            });
-            const data = await response.json();
-
-            if (data.status === 'success') {
-                // Recharger la liste des favoris
-                this.loadFavorites();
-            } else {
-                throw new Error(data.message);
-            }
-        } catch (error) {
-            console.error('Erreur lors de la gestion des favoris:', error);
-            this.showError('Erreur lors de la gestion des favoris');
-        }
-    },
-
     // Utilitaires
     formatPrice(price) {
         return new Intl.NumberFormat('fr-FR', {
@@ -260,38 +310,14 @@ const Dashboard = {
     },
 
     formatDate(date) {
-        return new Date(date).toLocaleDateString('fr-FR', {
-            day: '2-digit',
-            month: 'long',
-            year: 'numeric'
-        });
-    },
-
-    getStatusClass(status) {
-        const classes = {
-            'en_attente': 'bg-yellow-100 text-yellow-800',
-            'confirmee': 'bg-blue-100 text-blue-800',
-            'en_preparation': 'bg-purple-100 text-purple-800',
-            'en_livraison': 'bg-orange-100 text-orange-800',
-            'livree': 'bg-green-100 text-green-800',
-            'annulee': 'bg-red-100 text-red-800'
-        };
-        return `px-3 py-1 rounded-full text-sm ${classes[status] || ''}`;
-    },
-
-    getDeliveryStatusClass(status) {
-        const classes = {
-            'en_attente': 'bg-yellow-100 text-yellow-800',
-            'en_preparation': 'bg-purple-100 text-purple-800',
-            'en_cours': 'bg-blue-100 text-blue-800',
-            'livree': 'bg-green-100 text-green-800',
-            'annulee': 'bg-red-100 text-red-800'
-        };
-        return `px-3 py-1 rounded-full text-sm ${classes[status] || ''}`;
+        return new Intl.DateTimeFormat('fr-FR', {
+            dateStyle: 'long',
+            timeStyle: 'short'
+        }).format(new Date(date));
     },
 
     formatStatus(status) {
-        const labels = {
+        const statusMap = {
             'en_attente': 'En attente',
             'confirmee': 'Confirmée',
             'en_preparation': 'En préparation',
@@ -299,7 +325,7 @@ const Dashboard = {
             'livree': 'Livrée',
             'annulee': 'Annulée'
         };
-        return labels[status] || status;
+        return statusMap[status] || status;
     },
 
     formatDeliveryStatus(status) {
@@ -313,19 +339,47 @@ const Dashboard = {
         return labels[status] || status;
     },
 
+    getStatusClass(status) {
+        const classMap = {
+            'en_attente': 'bg-yellow-100 text-yellow-800',
+            'confirmee': 'bg-blue-100 text-blue-800',
+            'en_preparation': 'bg-purple-100 text-purple-800',
+            'en_livraison': 'bg-orange-100 text-orange-800',
+            'livree': 'bg-green-100 text-green-800',
+            'annulee': 'bg-red-100 text-red-800'
+        };
+        return `px-2 py-1 rounded-full text-sm ${classMap[status] || 'bg-gray-100 text-gray-800'}`;
+    },
+
+    getDeliveryStatusClass(status) {
+        const classes = {
+            'en_attente': 'bg-yellow-100 text-yellow-800',
+            'en_preparation': 'bg-purple-100 text-purple-800',
+            'en_cours': 'bg-blue-100 text-blue-800',
+            'livree': 'bg-green-100 text-green-800',
+            'annulee': 'bg-red-100 text-red-800'
+        };
+        return `px-3 py-1 rounded-full text-sm ${classes[status] || ''}`;
+    },
+
     showError(message) {
-        const toast = document.createElement('div');
-        toast.className = 'fixed bottom-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg';
-        toast.textContent = message;
-        document.body.appendChild(toast);
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4';
+        errorDiv.innerHTML = `
+            <strong class="font-bold">Erreur!</strong>
+            <span class="block sm:inline">${message}</span>
+        `;
+
+        const container = document.querySelector('.dashboard-container');
+        container.insertBefore(errorDiv, container.firstChild);
 
         setTimeout(() => {
-            toast.remove();
-        }, 3000);
+            errorDiv.remove();
+        }, 5000);
     }
 };
 
-// Initialiser le tableau de bord au chargement de la page
+// Initialisation du tableau de bord au chargement de la page
 document.addEventListener('DOMContentLoaded', () => {
     Dashboard.init();
 });

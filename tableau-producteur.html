@@ -14,6 +14,51 @@
         rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
     <script src="auth/protect.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Sélectionner tous les onglets
+            const tabs = document.querySelectorAll('.nav-tab');
+            const contents = document.querySelectorAll('.tab-content');
+    
+            // Fonction pour activer un onglet
+            function activateTab(tabId) {
+                // Masquer tous les contenus
+                contents.forEach(content => {
+                    content.classList.remove('active');
+                    content.style.display = 'none';
+                });
+    
+                // Désactiver tous les onglets
+                tabs.forEach(tab => {
+                    tab.classList.remove('bg-primary/20');
+                    tab.classList.add('hover:bg-gray-700');
+                });
+    
+                // Activer l'onglet sélectionné
+                const selectedTab = document.querySelector(`[data-target="${tabId}"]`);
+                const selectedContent = document.getElementById(`${tabId}-content`);
+    
+                if (selectedTab && selectedContent) {
+                    selectedTab.classList.add('bg-primary/20');
+                    selectedTab.classList.remove('hover:bg-gray-700');
+                    selectedContent.style.display = 'block';
+                    selectedContent.classList.add('active');
+                }
+            }
+    
+            // Ajouter les écouteurs d'événements aux onglets
+            tabs.forEach(tab => {
+                tab.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const tabId = tab.getAttribute('data-target');
+                    activateTab(tabId);
+                });
+            });
+    
+            // Activer l'onglet dashboard par défaut
+            activateTab('dashboard');
+        });
+    </script>
     <style>
         :where([class^="ri-"])::before {
             content: "\f3c2";

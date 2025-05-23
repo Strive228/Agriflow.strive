@@ -18,8 +18,9 @@ CREATE TABLE IF NOT EXISTS products (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX idx_producer (producer_id),
-    INDEX idx_availability (is_available)
-) ENGINE=InnoDB;
+    INDEX idx_availability (is_available),
+    FOREIGN KEY (producer_id) REFERENCES producers(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Table des favoris
 CREATE TABLE IF NOT EXISTS favorites (
@@ -29,8 +30,10 @@ CREATE TABLE IF NOT EXISTS favorites (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE KEY unique_favorite (customer_id, product_id),
     INDEX idx_customer (customer_id),
-    INDEX idx_product (product_id)
-) ENGINE=InnoDB;
+    INDEX idx_product (product_id),
+    FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Table des commandes
 CREATE TABLE IF NOT EXISTS orders (
@@ -46,8 +49,9 @@ CREATE TABLE IF NOT EXISTS orders (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX idx_customer (customer_id),
     INDEX idx_status (status),
-    INDEX idx_payment_status (payment_status)
-) ENGINE=InnoDB;
+    INDEX idx_payment_status (payment_status),
+    FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Table des items de commande
 CREATE TABLE IF NOT EXISTS order_items (
@@ -59,8 +63,10 @@ CREATE TABLE IF NOT EXISTS order_items (
     total_price DECIMAL(10, 2) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_order (order_id),
-    INDEX idx_product (product_id)
-) ENGINE=InnoDB;
+    INDEX idx_product (product_id),
+    FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Table des livraisons
 CREATE TABLE IF NOT EXISTS deliveries (
@@ -76,8 +82,9 @@ CREATE TABLE IF NOT EXISTS deliveries (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX idx_order (order_id),
-    INDEX idx_status (status)
-) ENGINE=InnoDB;
+    INDEX idx_status (status),
+    FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Table des factures
 CREATE TABLE IF NOT EXISTS invoices (
@@ -91,8 +98,9 @@ CREATE TABLE IF NOT EXISTS invoices (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX idx_order (order_id),
-    INDEX idx_status (status)
-) ENGINE=InnoDB;
+    INDEX idx_status (status),
+    FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Table des notifications
 CREATE TABLE IF NOT EXISTS notifications (
@@ -106,8 +114,9 @@ CREATE TABLE IF NOT EXISTS notifications (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_user (user_id),
     INDEX idx_type (type),
-    INDEX idx_read (is_read)
-) ENGINE=InnoDB;
+    INDEX idx_read (is_read),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Table des paramètres utilisateur
 CREATE TABLE IF NOT EXISTS user_settings (
@@ -120,35 +129,9 @@ CREATE TABLE IF NOT EXISTS user_settings (
     theme VARCHAR(20) DEFAULT 'light',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    INDEX idx_user (user_id)
-) ENGINE=InnoDB;
-
--- Contraintes de clé étrangère
-ALTER TABLE favorites
-    ADD CONSTRAINT fk_favorites_customer FOREIGN KEY (customer_id) REFERENCES users(id) ON DELETE CASCADE,
-    ADD CONSTRAINT fk_favorites_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE;
-
-ALTER TABLE orders
-    ADD CONSTRAINT fk_orders_customer FOREIGN KEY (customer_id) REFERENCES users(id) ON DELETE CASCADE;
-
-ALTER TABLE order_items
-    ADD CONSTRAINT fk_order_items_order FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
-    ADD CONSTRAINT fk_order_items_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE;
-
-ALTER TABLE deliveries
-    ADD CONSTRAINT fk_deliveries_order FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE;
-
-ALTER TABLE invoices
-    ADD CONSTRAINT fk_invoices_order FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE;
-
-ALTER TABLE notifications
-    ADD CONSTRAINT fk_notifications_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
-
-ALTER TABLE user_settings
-    ADD CONSTRAINT fk_user_settings_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE; avec encodage et collation appropriés
-CREATE DATABASE IF NOT EXISTS agriflow 
-CHARACTER SET utf8mb4 
-COLLATE utf8mb4_unicode_ci;
+    INDEX idx_user (user_id),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 USE agriflow;
 
