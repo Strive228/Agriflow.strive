@@ -150,4 +150,3 @@ Ce projet est sous licence MIT. Consultez le fichier [LICENSE](LICENSE.md) pour 
 
 ---
 
-*Ce README a été généré avec l'aide d'un partenaire de codage IA.*
