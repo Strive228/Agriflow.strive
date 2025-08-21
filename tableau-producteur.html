@@ -6,7 +6,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Agritech - La technologie au service de l'agriculture</title>
     <script src="https://cdn.tailwindcss.com/3.4.16"></script>
-    <script>tailwind.config = { theme: { extend: { colors: { primary: '#4CAF50', secondary: '#FF9800' }, borderRadius: { 'none': '0px', 'sm': '4px', DEFAULT: '8px', 'md': '12px', 'lg': '16px', 'xl': '20px', '2xl': '24px', '3xl': '32px', 'full': '9999px', 'button': '8px' } } } }</script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4CAF50',
+                        secondary: '#FF9800'
+                    },
+                    borderRadius: {
+                        'none': '0px',
+                        'sm': '4px',
+                        DEFAULT: '8px',
+                        'md': '12px',
+                        'lg': '16px',
+                        'xl': '20px',
+                        '2xl': '24px',
+                        '3xl': '32px',
+                        'full': '9999px',
+                        'button': '8px'
+                    }
+                }
+            }
+        };
+    </script>
+    <script src="js/profile-menu.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
@@ -15,11 +39,11 @@
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
     <script src="auth/protect.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // Sélectionner tous les onglets
             const tabs = document.querySelectorAll('.nav-tab');
             const contents = document.querySelectorAll('.tab-content');
-    
+
             // Fonction pour activer un onglet
             function activateTab(tabId) {
                 // Masquer tous les contenus
@@ -27,25 +51,32 @@
                     content.classList.remove('active');
                     content.style.display = 'none';
                 });
-    
+
                 // Désactiver tous les onglets
                 tabs.forEach(tab => {
                     tab.classList.remove('bg-primary/20');
                     tab.classList.add('hover:bg-gray-700');
                 });
-    
+
                 // Activer l'onglet sélectionné
                 const selectedTab = document.querySelector(`[data-target="${tabId}"]`);
                 const selectedContent = document.getElementById(`${tabId}-content`);
-    
+
                 if (selectedTab && selectedContent) {
                     selectedTab.classList.add('bg-primary/20');
                     selectedTab.classList.remove('hover:bg-gray-700');
                     selectedContent.style.display = 'block';
                     selectedContent.classList.add('active');
+
+                    // Mettre à jour le titre de la barre latérale
+                    const sidebarTitle = document.getElementById('sidebar-title');
+                    const activeTabSpan = selectedTab.querySelector('span');
+                    if (sidebarTitle && activeTabSpan) {
+                        sidebarTitle.textContent = activeTabSpan.textContent;
+                    }
                 }
             }
-    
+
             // Ajouter les écouteurs d'événements aux onglets
             tabs.forEach(tab => {
                 tab.addEventListener('click', (e) => {
@@ -54,9 +85,37 @@
                     activateTab(tabId);
                 });
             });
-    
+
             // Activer l'onglet dashboard par défaut
             activateTab('dashboard');
+
+            // Gestion du formulaire produit (affichage/masquage)
+            const addProductBtn = document.getElementById('add-product-btn');
+            if (addProductBtn) {
+                addProductBtn.addEventListener('click', () => {
+                    const form = document.getElementById('product-form');
+                    if (form) form.classList.toggle('hidden');
+                });
+            }
+
+            // Gestion de la soumission du formulaire d'ajout de produit
+            const productForm = document.getElementById('product-form-html');
+            if (productForm) {
+                productForm.addEventListener('submit', function (event) {
+                    event.preventDefault();
+                    // Récupérer les valeurs des champs
+                    const name = document.getElementById('product-name').value;
+                    const category = document.getElementById('product-category').value;
+                    const price = document.getElementById('product-price').value;
+                    const unit = document.getElementById('product-unit').value;
+                    const quantity = document.getElementById('product-quantity-value').value;
+                    const description = document.getElementById('product-description').value;
+                    // Afficher une alerte de confirmation (exemple)
+                    alert('Produit enregistré : ' + name + '\nCatégorie : ' + category + '\nPrix : ' + price + ' FCFA' + '\nUnité : ' + unit + '\nQuantité : ' + quantity + '\nDescription : ' + description);
+                    // Tu peux ici envoyer les données à ton backend ou les afficher dans la liste
+                    // productForm.reset(); // Pour réinitialiser le formulaire si besoin
+                });
+            }
         });
     </script>
     <style>
@@ -151,539 +210,543 @@
         input:checked+.slider:before {
             transform: translateX(26px);
         }
+
         .tab-content {
-    display: none;
-}
+            display: none;
+        }
 
-.tab-content.active {
-    display: block;
-}
+        .tab-content.active {
+            display: block;
+        }
 
-/* Style actif pour les onglets */
-.nav-tab.active-tab {
-    background-color: rgb(0 123 255 / 0.2); /* bg-primary/20 */
-}
+        /* Style actif pour les onglets */
+        .nav-tab.active-tab {
+            background-color: rgb(0 123 255 / 0.2);
+            /* bg-primary/20 */
+        }
     </style>
 </head>
 
-<body class="bg-gray-50">
+<body class="bg-gray-50 flex flex-col min-h-screen h-full">
     <!-- Navbar -->
     <header class="bg-white shadow-sm sticky top-0 z-50">
         <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-            <div class="flex items-center">
-                <a href="#" class="text-2xl font-['Pacifico'] text-primary">Agritech</a>
-                <nav class="hidden md:flex ml-10">
-                    <a href="index.html"
-                        class="border-primary text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Accueil</a>
+            <div class="flex items-center flex-1">
+                <a href="accueil.html" class="flex items-center"><img src="logo.png" alt="Logo Agritech"
+                        class="h-10"></a>
+                <nav class="hidden md:flex mx-auto space-x-8">
+                    <a href="accueil.html"
+                        class="border-b-2 border-transparent text-gray-500 pb-1 text-sm font-medium transition-all hover:text-primary hover:border-primary">Accueil</a>
                     <a href="shop.html"
-                        class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">MarketPlace</a>
-                    <a href="dash.html"
-                        class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Producteurs</a>
+                        class="border-b-2 border-transparent text-gray-500 pb-1 text-sm font-medium transition-all hover:text-primary hover:border-primary">MarketPlace</a>
+                    <a href="tableau-producteur.html"
+                        class="border-b-2 border-primary text-gray-900 pb-1 text-sm font-medium transition-all hover:text-primary">Producteurs</a>
                     <a href="customerboard.html"
-                        class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Clients</a>
+                        class="border-b-2 border-transparent text-gray-500 pb-1 text-sm font-medium transition-all hover:text-primary hover:border-primary">Clients</a>
                     <a href="#"
-                        class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Livraison</a>
+                        class="border-b-2 border-transparent text-gray-500 pb-1 text-sm font-medium transition-all hover:text-primary hover:border-primary">Livraison</a>
                     <a href="#"
-                        class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">À
+                        class="border-b-2 border-transparent text-gray-500 pb-1 text-sm font-medium transition-all hover:text-primary hover:border-primary">À
                         propos</a>
                 </nav>
             </div>
-            <div class="flex items-center">
-                <a href="#"
-                    class="hidden md:inline-block px-4 py-2 text-gray-700 hover:text-primary mr-2 whitespace-nowrap">Se
-                    connecter</a>
-                <a href="#"
-                    class="bg-primary text-white px-5 py-2 !rounded-button hover:bg-opacity-90 transition whitespace-nowrap">S'inscrire</a>
-                <button class="ml-4 md:hidden w-10 h-10 flex items-center justify-center">
+            <div class="flex items-center space-x-4">
+                <!-- Menu profil producteur -->
+                <div id="user-profile" class="relative">
+                    <button type="button"
+                        class="flex items-center space-x-2 text-gray-700 hover:text-primary transition"
+                        id="profile-menu-button" aria-expanded="false">
+                        <img src="https://readdy.ai/api/search-image?query=professional%20farmer%20portrait%2C%20close-up%20headshot%2C%20neutral%20background%2C%2040%20year%20old%20man&width=40&height=40&seq=3&orientation=squarish"
+                            alt="Profil" class="w-8 h-8 rounded-full object-cover">
+                        <span class="text-sm font-medium" id="farm-name">Ferme de la Vallée</span>
+                        <i class="ri-arrow-down-s-line"></i>
+                    </button>
+                    <div class="hidden absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5"
+                        id="profile-dropdown">
+                        <a href="tableau-producteur.html"
+                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Tableau de bord</a>
+                        <a href="#" id="logout-button"
+                            class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Se
+                            déconnecter</a>
+                    </div>
+                </div>
+                <!-- Bouton menu mobile -->
+                <button class="md:hidden w-10 h-10 flex items-center justify-center" id="mobile-menu-button">
                     <i class="ri-menu-line ri-lg"></i>
                 </button>
             </div>
         </div>
+        <!-- Mobile menu -->
+        <div id="mobile-menu" class="md:hidden hidden bg-white shadow-md">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="accueil.html"
+                    class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Accueil</a>
+                <a href="shop.html"
+                    class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">MarketPlace</a>
+                <a href="tableau-producteur.html"
+                    class="block px-3 py-2 rounded-md text-base font-medium text-primary bg-primary/10">Producteurs</a>
+                <a href="customerboard.html"
+                    class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Clients</a>
+                <hr class="my-2">
+                <div class="px-3 py-2">
+                    <div class="flex items-center space-x-3 mb-2">
+                        <img src="https://readdy.ai/api/search-image?query=professional%20farmer%20portrait%2C%20close-up%20headshot%2C%20neutral%20background%2C%2040%20year%20old%20man&width=40&height=40&seq=3&orientation=squarish"
+                            alt="Profil" class="w-10 h-10 rounded-full object-cover">
+                        <div>
+                            <p class="text-base font-medium text-gray-800" id="mobile-farm-name">Ferme de la Vallée</p>
+                        </div>
+                    </div>
+                    <a href="tableau-producteur.html"
+                        class="block rounded-md px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-100"><i
+                            class="ri-dashboard-line mr-2"></i>Tableau de bord</a>
+                    <button id="mobile-logout-button"
+                        class="block w-full text-left mt-1 px-3 py-2 rounded-md text-base font-medium text-red-500 hover:bg-red-100 hover:text-red-700">
+                        <i class="ri-logout-box-r-line mr-2"></i>Se déconnecter
+                    </button>
+                </div>
+            </div>
+        </div>
     </header>
 
-    
+
     <!-- ############################################## -->
-        <!-- Ajouter cette section après le Hero Section existant -->
-        <section class="py-16 bg-white">
-            <div class="container mx-auto px-4">
-                <!-- Dashboard Producteur -->
-                <div class="bg-white rounded-lg shadow-xl overflow-hidden">
-                    <div class="flex flex-col md:flex-row">
-                        <!-- Sidebar -->
-                        <div class="bg-gray-800 text-white p-4 md:w-64">
+    <!-- Ajouter cette section après le Hero Section existant -->
+    <section class="bg-white flex-1 min-h-screen flex">
+
+        <!-- Changed: Removed container mx-auto and px-4 to allow full width, added px-4 or sm:px-6 lg:px-8 for responsive padding directly on children or specific sections if needed -->
+        <div class="w-full h-full flex-1 min-h-0">
+            <!-- Dashboard Producteur -->
+            <!-- Removed rounded-lg and shadow-xl from here to apply it potentially more locally or let content define it -->
+            <div class="bg-white overflow-hidden h-full flex-1 min-h-0">
+                <div class="flex flex-col md:flex-row h-full min-h-0 flex-1">
+                    <!-- Sidebar -->
+                    <aside class="bg-gray-800 text-white p-4 md:w-64 flex flex-col min-h-screen justify-between">
+                        <div>
                             <div class="flex items-center mb-8">
-                                <span class="text-xl font-['Pacifico'] text-white">Agritech</span>
+                                <span id="sidebar-title" class="text-xl font-['Pacifico'] text-white">Agritech</span>
                             </div>
-        
                             <nav class="space-y-2">
-                                <a href="#"   class="nav-tab flex items-center p-3 bg-primary/20 rounded" data-target="dashboard">
+                                <a href="#" class="nav-tab flex items-center p-3 bg-primary/20 rounded"
+                                    data-target="dashboard">
+                                    <!-- Ensure this matches the 'initialTabTarget' in JS if it's the default -->
                                     <i class="ri-dashboard-line mr-3"></i>
                                     <span>Tableau de bord</span>
                                 </a>
-                                <a href="#"  class="nav-tab flex items-center p-3 hover:bg-gray-700 rounded" data-target="mes-produits">
+                                <a href="#" class="nav-tab flex items-center p-3 hover:bg-gray-700 rounded"
+                                    data-target="mes-produits">
                                     <i class="ri-store-2-line mr-3"></i>
                                     <span>Mes produits</span>
                                 </a>
-                                <a href="#"  class="nav-tab flex items-center p-3 hover:bg-gray-700 rounded" data-target="commandes">
+                                <a href="#" class="nav-tab flex items-center p-3 hover:bg-gray-700 rounded"
+                                    data-target="commandes">
                                     <i class="ri-shopping-cart-2-line mr-3"></i>
                                     <span>Commandes</span>
                                 </a>
-                                <a href="#"  class="nav-tab flex items-center p-3 hover:bg-gray-700 rounded" data-target="livraisons">
+                                <a href="#" class="nav-tab flex items-center p-3 hover:bg-gray-700 rounded"
+                                    data-target="livraisons">
                                     <i class="ri-truck-line mr-3"></i>
                                     <span>Livraisons</span>
                                 </a>
-                                <a href="#" data-target="statistiques" class="nav-tab flex items-center p-3 hover:bg-gray-700 rounded">
+                                <a href="#" data-target="statistiques"
+                                    class="nav-tab flex items-center p-3 hover:bg-gray-700 rounded">
                                     <i class="ri-bar-chart-box-line mr-3"></i>
                                     <span>Statistiques</span>
                                 </a>
-                                <a href="#" data-target="parametres" class="nav-tab flex items-center p-3 hover:bg-gray-700 rounded">
+                                <a href="#" data-target="parametres"
+                                    class="nav-tab flex items-center p-3 hover:bg-gray-700 rounded">
                                     <i class="ri-settings-3-line mr-3"></i>
                                     <span>Paramètres</span>
                                 </a>
                             </nav>
                         </div>
-        
-                        <!-- Main Content -->
-                        <div class="flex-1 p-6">
+                        <div class="mt-8 text-xs text-gray-400 text-center hidden md:block">
+                            © 2025 Agritech
+                        </div>
+                    </aside>
 
-                            <!-- Section Tableau de bord -->
-                            <div id="dashboard" class="dashboard-section tab-content active">
-                                <div class="flex justify-between items-center mb-6">
-                                    <h3 class="text-xl font-semibold">Tableau de bord</h3>
-                                    <div class="flex items-center">
-                                        <div class="relative mr-3">
-                                            <i class="ri-notification-3-line text-gray-500"></i>
-                                            <span
-                                                class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">3</span>
+                    <!-- Main Content -->
+
+                    <div class="flex-1 p-4 sm:p-6 h-full min-h-0 overflow-y-auto">
+
+
+                        <!-- Section Tableau de bord -->
+                        <div id="dashboard-content" class="dashboard-section tab-content active">
+                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
+                                <h3 class="text-lg sm:text-xl font-semibold text-gray-800">Tableau de bord</h3>
+                                <!-- Add any actions like date filter here if needed -->
+                            </div>
+
+                            <!-- Stats Cards -->
+                            <!-- Already responsive with grid-cols-1 md:grid-cols-4. Text sizes can be adjusted. -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                                <div class="bg-blue-50 p-3 sm:p-4 rounded-lg shadow">
+                                    <div class="flex justify-between items-center">
+                                        <div>
+                                            <p class="text-xs sm:text-sm text-gray-500">Ventes du jour</p>
+                                            <p class="text-xl sm:text-2xl font-semibold" id="stats-ventes-jour-montant">
+                                                0 FCFA</p>
                                         </div>
-                                        <div class="flex items-center">
-                                            <img src="https://readdy.ai/api/search-image?query=professional%20farmer%20portrait%2C%20close-up%20headshot%2C%20neutral%20background%2C%2040%20year%20old%20man&width=40&height=40&seq=3&orientation=squarish"
-                                                alt="Profile" class="w-8 h-8 rounded-full object-cover">
-                                            <span class="ml-2 text-gray-700">Thomas Dupont</span>
+                                        <div
+                                            class="w-8 h-8 sm:w-10 sm:h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                                            <i class="ri-money-euro-circle-line text-blue-500 text-base sm:text-xl"></i>
                                         </div>
                                     </div>
+                                    <p class="text-xs text-green-600 mt-2" id="stats-ventes-jour-variation">+0%</p>
                                 </div>
-                                
-                                <!-- Stats Cards -->
-                                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                                    <div class="bg-blue-50 p-4 rounded-lg">
-                                        <div class="flex justify-between items-center">
-                                            <div>
-                                                <p class="text-sm text-gray-500">Ventes du jour</p>
-                                                <p class="text-2xl font-semibold">386 000 FCFA</p>
-                                            </div>
-                                            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                                                <i class="ri-money-euro-circle-line text-blue-500"></i>
-                                            </div>
+
+                                <div class="bg-green-50 p-3 sm:p-4 rounded-lg shadow">
+                                    <div class="flex justify-between items-center">
+                                        <div>
+                                            <p class="text-xs sm:text-sm text-gray-500">Commandes</p>
+                                            <p class="text-xl sm:text-2xl font-semibold" id="stats-commandes-total">0
+                                            </p>
                                         </div>
-                                        <p class="text-xs text-green-600 mt-2">+12% par rapport à hier</p>
-                                    </div>
-                                
-                                    <div class="bg-green-50 p-4 rounded-lg">
-                                        <div class="flex justify-between items-center">
-                                            <div>
-                                                <p class="text-sm text-gray-500">Commandes</p>
-                                                <p class="text-2xl font-semibold">24</p>
-                                            </div>
-                                            <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                                                <i class="ri-shopping-cart-2-line text-green-500"></i>
-                                            </div>
+                                        <div
+                                            class="w-8 h-8 sm:w-10 sm:h-10 bg-green-100 rounded-full flex items-center justify-center">
+                                            <i class="ri-shopping-cart-2-line text-green-500 text-base sm:text-xl"></i>
                                         </div>
-                                        <p class="text-xs text-green-600 mt-2">5 nouvelles aujourd'hui</p>
                                     </div>
-                                
-                                    <div class="bg-orange-50 p-4 rounded-lg">
-                                        <div class="flex justify-between items-center">
-                                            <div>
-                                                <p class="text-sm text-gray-500">Produits</p>
-                                                <p class="text-2xl font-semibold">42</p>
-                                            </div>
-                                            <div class="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
-                                                <i class="ri-store-2-line text-orange-500"></i>
-                                            </div>
-                                        </div>
-                                        <p class="text-xs text-orange-600 mt-2">3 stocks faibles</p>
-                                    </div>
-                                
-                                    <div class="bg-purple-50 p-4 rounded-lg">
-                                        <div class="flex justify-between items-center">
-                                            <div>
-                                                <p class="text-sm text-gray-500">Clients</p>
-                                                <p class="text-2xl font-semibold">156</p>
-                                            </div>
-                                            <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                                                <i class="ri-user-line text-purple-500"></i>
-                                            </div>
-                                        </div>
-                                        <p class="text-xs text-purple-600 mt-2">+8 cette semaine</p>
-                                    </div>
+                                    <p class="text-xs text-green-600 mt-2" id="stats-commandes-nouvelles">0 nouvelles
+                                        aujourd'hui</p>
                                 </div>
-                                
-                                <!-- Sales Chart -->
-                                <div class="bg-white rounded-lg shadow p-4 mb-6">
-                                    <h4 class="text-lg font-medium mb-4">Ventes mensuelles</h4>
-                                    <div id="salesChart" style="width: 100%; height: 300px;"></div>
+
+                                <div class="bg-orange-50 p-3 sm:p-4 rounded-lg shadow">
+                                    <div class="flex justify-between items-center">
+                                        <div>
+                                            <p class="text-xs sm:text-sm text-gray-500">Produits</p>
+                                            <p class="text-xl sm:text-2xl font-semibold" id="stats-produits-total">0</p>
+                                        </div>
+                                        <div
+                                            class="w-8 h-8 sm:w-10 sm:h-10 bg-orange-100 rounded-full flex items-center justify-center">
+                                            <i class="ri-store-2-line text-orange-500 text-base sm:text-xl"></i>
+                                        </div>
+                                    </div>
+                                    <p class="text-xs text-orange-600 mt-2" id="stats-produits-stock-faible">0 stocks
+                                        faibles</p>
                                 </div>
-                                
-                                <!-- Recent Orders -->
-                                <div class="bg-white rounded-lg shadow p-4">
-                                    <div class="flex justify-between items-center mb-4">
-                                        <h4 class="text-lg font-medium">Commandes récentes</h4>
-                                        <a href="#" class="text-primary text-sm">Voir tout</a>
+
+                                <div class="bg-purple-50 p-3 sm:p-4 rounded-lg shadow">
+                                    <div class="flex justify-between items-center">
+                                        <div>
+                                            <p class="text-xs sm:text-sm text-gray-500">Clients</p>
+                                            <p class="text-xl sm:text-2xl font-semibold" id="stats-clients-total">0</p>
+                                        </div>
+                                        <div
+                                            class="w-8 h-8 sm:w-10 sm:h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                                            <i class="ri-user-line text-purple-500 text-base sm:text-xl"></i>
+                                        </div>
                                     </div>
-                                
-                                    <div class="overflow-x-auto">
-                                        <table class="w-full">
-                                            <thead>
-                                                <tr class="text-left text-gray-500 text-sm">
-                                                    <th class="pb-3 font-medium">Client</th>
-                                                    <th class="pb-3 font-medium">Produits</th>
-                                                    <th class="pb-3 font-medium">Montant</th>
-                                                    <th class="pb-3 font-medium">Statut</th>
-                                                    <th class="pb-3 font-medium">Action</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr class="border-t border-gray-100">
-                                                    <td class="py-3">Marie Lefevre</td>
-                                                    <td class="py-3">Tomates, Courgettes, Aubergines</td>
-                                                    <td class="py-3">42,50 FCFA</td>
-                                                    <td class="py-3"><span class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded text-xs">En
-                                                            préparation</span></td>
-                                                    <td class="py-3">
-                                                        <button class="text-primary hover:text-primary-dark">Détails</button>
-                                                    </td>
-                                                </tr>
-                                                <tr class="border-t border-gray-100">
-                                                    <td class="py-3">Pierre Moreau</td>
-                                                    <td class="py-3">Pommes, Poires</td>
-                                                    <td class="py-3">18,75 FCFA</td>
-                                                    <td class="py-3"><span class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs">En
-                                                            livraison</span></td>
-                                                    <td class="py-3">
-                                                        <button class="text-primary hover:text-primary-dark">Détails</button>
-                                                    </td>
-                                                </tr>
-                                                <tr class="border-t border-gray-100">
-                                                    <td class="py-3">Restaurant Le Terroir</td>
-                                                    <td class="py-3">Carottes, Pommes de terre, Oignons</td>
-                                                    <td class="py-3">87,20 FCFA</td>
-                                                    <td class="py-3"><span class="px-2 py-1 bg-green-100 text-green-800 rounded text-xs">Livré</span>
-                                                    </td>
-                                                    <td class="py-3">
-                                                        <button class="text-primary hover:text-primary-dark">Détails</button>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
+                                    <p class="text-xs text-purple-600 mt-2" id="stats-clients-nouveaux">+0 cette semaine
+                                    </p>
                                 </div>
                             </div>
 
-                            <!-- Section Mes Produits -->
-                            <div id="mes-produits" class="mb-12 tab-content">
-                                <div class="flex justify-between items-center mb-6">
-                                    <h3 class="text-2xl font-bold text-gray-900">Mes produits</h3>
-                                    <button
-                                        class="bg-primary text-white px-4 py-2 !rounded-button hover:bg-opacity-90 transition">
-                                        <i class="ri-add-line mr-2"></i>Ajouter un produit
-                                    </button>
-                                </div>
-        
-                                <!-- Formulaire Ajout Produit -->
-                                <div class="bg-white rounded-lg shadow p-4 mb-6 hidden" id="product-form">
-                                    <form class="space-y-4">
-                                        <div class="grid md:grid-cols-2 gap-4">
-                                            <div>
-                                                <label class="block text-gray-700 mb-2">Nom du produit</label>
-                                                <input type="text"
-                                                    class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:border-primary">
-                                            </div>
-                                            <div>
-                                                <label class="block text-gray-700 mb-2">Catégorie</label>
-                                                <select
-                                                    class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:border-primary">
-                                                    <option>Légumes</option>
-                                                    <option>Fruits</option>
-                                                    <option>Produits laitiers</option>
-                                                </select>
-                                            </div>
-                                        </div>
-        
-                                        <div class="grid md:grid-cols-3 gap-4">
-                                            <div>
-                                                <label class="block text-gray-700 mb-2">Prix (€)</label>
-                                                <input type="number"
-                                                    class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:border-primary">
-                                            </div>
-                                            <div>
-                                                <label class="block text-gray-700 mb-2">Quantité</label>
-                                                <input type="number"
-                                                    class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:border-primary">
-                                            </div>
-                                            <div>
-                                                <label class="block text-gray-700 mb-2">Stock</label>
-                                                <select
-                                                    class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:border-primary">
-                                                    <option>En stock</option>
-                                                    <option>Stock faible</option>
-                                                    <option>Rupture</option>
-                                                </select>
-                                            </div>
-                                        </div>
-        
-                                        <div>
-                                            <label class="block text-gray-700 mb-2">Description</label>
-                                            <textarea rows="3"
-                                                class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:border-primary"></textarea>
-                                        </div>
-        
-                                        <div>
-                                            <label class="block text-gray-700 mb-2">Image du produit</label>
-                                            <div class="border-2 border-dashed border-gray-200 rounded-lg p-4 text-center">
-                                                <i class="ri-image-add-line text-3xl text-gray-400 mb-2"></i>
-                                                <p class="text-gray-500">Glissez-déposez ou <span
-                                                        class="text-primary cursor-pointer">parcourir</span></p>
-                                            </div>
-                                        </div>
-        
-                                        <button
-                                            class="bg-primary text-white px-6 py-2 !rounded-button hover:bg-opacity-90 transition">
-                                            Enregistrer le produit
-                                        </button>
-                                    </form>
-                                </div>
-        
-                                <!-- Liste des Produits -->
-                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                    <!-- Produit 1 -->
-                                    <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition">
-                                        <div class="h-48 bg-gray-100 relative">
-                                            <img src="https://readdy.ai/api/search-image?query=fresh%20organic%20carrots%20on%20white%20background%2C%20high%20quality%20product%20photography%2C%20vibrant%20orange%20color&width=300&height=200&seq=5&orientation=landscape"
-                                                class="w-full h-full object-cover">
-                                            <span
-                                                class="absolute top-2 right-2 bg-primary text-white px-2 py-1 rounded text-xs">En
-                                                stock</span>
-                                        </div>
-                                        <div class="p-4">
-                                            <h4 class="font-semibold text-lg">Tomates Bio</h4>
-                                            <div class="flex justify-between items-center mt-2">
-                                                <span class="text-primary font-bold">3,50 FCFA/kg</span>
-                                                <div class="flex items-center">
-                                                    <i
-                                                        class="ri-edit-box-line text-gray-500 hover:text-primary cursor-pointer mr-2"></i>
-                                                    <i
-                                                        class="ri-delete-bin-line text-gray-500 hover:text-red-500 cursor-pointer"></i>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Produit 2 -->
-                                    <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition">
-                                        <div class="h-48 bg-gray-100 relative">
-                                            <img src="https://readdy.ai/api/search-image?query=fresh%20organic%20apples%20on%20white%20background%2C%20high%20quality%20product%20photography%2C%20red%20and%20green%20apples&width=300&height=200&seq=6&orientation=landscape"
-                                                class="w-full h-full object-cover">
-                                            <span class="absolute top-2 right-2 bg-primary text-white px-2 py-1 rounded text-xs">En
-                                                stock</span>
-                                        </div>
-                                        <div class="p-4">
-                                            <h4 class="font-semibold text-lg">Tomates Bio</h4>
-                                            <div class="flex justify-between items-center mt-2">
-                                                <span class="text-primary font-bold">3,50 FCFA/kg</span>
-                                                <div class="flex items-center">
-                                                    <i class="ri-edit-box-line text-gray-500 hover:text-primary cursor-pointer mr-2"></i>
-                                                    <i class="ri-delete-bin-line text-gray-500 hover:text-red-500 cursor-pointer"></i>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Produit 3 -->
-                                    <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition">
-                                        <div class="h-48 bg-gray-100 relative">
-                                            <img src="https://readdy.ai/api/search-image?query=fresh%20organic%20lettuce%20on%20white%20background%2C%20high%20quality%20product%20photography%2C%20crisp%20green%20leaves&width=300&height=200&seq=7&orientation=landscape"
-                                                class="w-full h-full object-cover">
-                                            <span class="absolute top-2 right-2 bg-primary text-white px-2 py-1 rounded text-xs">En
-                                                stock</span>
-                                        </div>
-                                        <div class="p-4">
-                                            <h4 class="font-semibold text-lg">Tomates Bio</h4>
-                                            <div class="flex justify-between items-center mt-2">
-                                                <span class="text-primary font-bold">3,50 FCFA/kg</span>
-                                                <div class="flex items-center">
-                                                    <i class="ri-edit-box-line text-gray-500 hover:text-primary cursor-pointer mr-2"></i>
-                                                    <i class="ri-delete-bin-line text-gray-500 hover:text-red-500 cursor-pointer"></i>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!-- Plus de produits... -->
-                                </div>
+                            <!-- Sales Chart -->
+                            <div class="bg-white rounded-lg shadow p-3 sm:p-4 mb-6">
+                                <h4 class="text-md sm:text-lg font-medium mb-4">Ventes mensuelles</h4>
+                                <div id="salesChart" class="w-full h-64 sm:h-72"></div>
                             </div>
 
-                            <!-- Section Commandes (à ajouter si manquante) -->
-                            <div id="commandes" class="mb-12 tab-content">
-                                <div class="bg-white rounded-lg shadow p-6 mb-8">
-                                    <div class="flex justify-between items-center mb-4">
-                                        <h3 class="text-lg font-semibold">🛒 Historique des commandes</h3>
-                                        <div class="flex gap-2">
-                                            <input type="date" class="border rounded px-2 py-1 text-sm">
-                                            <select class="border rounded px-2 py-1 text-sm">
-                                                <option>Tous les statuts</option>
-                                                <option>Livré</option>
-                                                <option>En cours</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                
-                                    <table class="w-full">
+                            <!-- Recent Orders -->
+                            <div class="bg-white rounded-lg shadow p-3 sm:p-4">
+                                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
+                                    <h4 class="text-md sm:text-lg font-medium mb-2 sm:mb-0">Commandes récentes</h4>
+                                    <a href="#" class="text-primary text-xs sm:text-sm"
+                                        onclick="document.querySelector('[data-target=commandes]').click(); return false;">Voir
+                                        tout</a>
+                                </div>
+
+                                <div class="overflow-x-auto">
+                                    <table class="w-full min-w-[600px]"> <!-- min-w ensure some width before scroll -->
                                         <thead>
-                                            <tr class="text-left text-sm text-gray-500 border-b">
-                                                <th class="pb-3">Date</th>
-                                                <th class="pb-3">Produits</th>
-                                                <th class="pb-3">Montant</th>
-                                                <th class="pb-3">Statut</th>
-                                                <th class="pb-3"></th>
+                                            <tr class="text-left text-gray-500 text-xs sm:text-sm">
+                                                <th class="p-2 font-medium">Client</th>
+                                                <th class="p-2 font-medium hidden sm:table-cell">Produits</th>
+                                                <th class="p-2 font-medium">Montant</th>
+                                                <th class="p-2 font-medium">Statut</th>
+                                                <th class="p-2 font-medium">Action</th>
                                             </tr>
                                         </thead>
-                                        <tbody>
-                                            <tr class="border-b">
-                                                <td class="py-3">15/06/2024</td>
-                                                <td class="py-3">Tomates (5kg), Carottes (3kg)</td>
-                                                <td class="py-3">45,60 FCFA</td>
-                                                <td class="py-3"><span class="px-2 py-1 bg-green-100 text-green-800 rounded text-xs">Livré</span></td>
-                                                <td class="py-3"><button class="text-primary hover:text-primary-dark">Détails</button></td>
-                                            </tr>
-                                            <!-- Plus de lignes... -->
+                                        <tbody id="dashboard-recent-orders-tbody" class="text-xs sm:text-sm">
+                                            <!-- Recent orders will be populated by JavaScript -->
                                         </tbody>
                                     </table>
                                 </div>
                             </div>
-
-                            <!-- Section Livraisons -->
-                            <div id="livraisons" class="mb-12 tab-content">
-                                <h3 class="text-2xl font-bold text-gray-900 mb-6">Suivi des livraisons</h3>
-        
-                                <div class="grid md:grid-cols-2 gap-6">
-                                    <!-- Carte de suivi -->
-                                    <div class="bg-white rounded-lg shadow p-4 h-96">
-                                        <div class="h-full bg-gray-100 rounded-lg flex items-center justify-center">
-                                            <i class="ri-map-pin-line text-3xl text-gray-400"></i>
-                                        </div>
-                                    </div>
-        
-                                    <!-- Détails Livraison -->
-                                    <div class="space-y-4">
-                                        <div class="bg-white rounded-lg shadow p-4">
-                                            <div class="flex items-center mb-3">
-                                                <div
-                                                    class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center mr-3">
-                                                    <i class="ri-truck-line text-primary"></i>
-                                                </div>
-                                                <div>
-                                                    <h4 class="font-semibold">Livraison #12345</h4>
-                                                    <p class="text-sm text-gray-500">En cours vers Paris</p>
-                                                </div>
-                                            </div>
-                                            <div class="space-y-2">
-                                                <div class="flex justify-between text-sm">
-                                                    <span>Statut:</span>
-                                                    <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">En
-                                                        transit</span>
-                                                </div>
-                                                <div class="flex justify-between text-sm">
-                                                    <span>Client:</span>
-                                                    <span>Marie Dupont</span>
-                                                </div>
-                                                <div class="flex justify-between text-sm">
-                                                    <span>Date estimée:</span>
-                                                    <span>25/06/2024 15:30</span>
-                                                </div>
-                                            </div>
-                                        </div>
-        
-                                        <!-- Historique Statut -->
-                                        <div class="bg-white rounded-lg shadow p-4">
-                                            <h4 class="font-semibold mb-3">Historique</h4>
-                                            <div class="space-y-2">
-                                                <div class="flex items-center text-sm">
-                                                    <div
-                                                        class="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-2">
-                                                        <i class="ri-check-line text-green-600 text-xs"></i>
-                                                    </div>
-                                                    <span>Commande préparée - 24/06 09:45</span>
-                                                </div>
-                                                <div class="flex items-center text-sm">
-                                                    <div
-                                                        class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center mr-2">
-                                                        <i class="ri-truck-line text-blue-600 text-xs"></i>
-                                                    </div>
-                                                    <span>Prise en charge transporteur - 24/06 14:20</span>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="bg-white rounded-lg shadow p-6 mb-8">
-                                            <h3 class="text-lg font-semibold mb-4">🚚 Suivi des livraisons</h3>
-                                            <div class="flex items-center justify-between p-4 bg-gray-50 rounded">
-                                                <div class="flex items-center">
-                                                    <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mr-4">
-                                                        <i class="ri-truck-line text-primary"></i>
-                                                    </div>
-                                                    <div>
-                                                        <div class="font-medium">Livraison #1254</div>
-                                                        <div class="text-sm text-gray-500">En route - Livraison prévue à 15h30</div>
-                                                    </div>
-                                                </div>
-                                                <div class="text-sm">
-                                                    <div class="text-gray-500">Livreur: Jean Martin</div>
-                                                    <div class="text-primary">+33 6 12 34 56 78</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-        
-                            <!-- Section Statistiques -->
-                            <div id="statistiques" class="mb-12 tab-content">
-                                <h3 class="text-2xl font-bold text-gray-900 mb-6">Statistiques</h3>
-        
-                                <div class="grid md:grid-cols-2 gap-6">
-                                    <!-- Graphique Ventes -->
-                                    <div class="bg-white rounded-lg shadow p-4">
-                                        <h4 class="font-semibold mb-4">Évolution des ventes</h4>
-                                        <div id="sales-chart" class="h-64"></div>
-                                    </div>
-        
-                                    <!-- Répartition Produits -->
-                                    <div class="bg-white rounded-lg shadow p-4">
-                                        <h4 class="font-semibold mb-4">Répartition des ventes</h4>
-                                        <div id="products-chart" class="h-64"></div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Section Paramètres (à ajouter si manquante) -->
-                            <div id="parametres" class="mb-12 tab-content">
-                                ...
-                            </div>
-
                         </div>
+
+                        <!-- Section Mes Produits -->
+                        <div id="mes-produits-content" class="mb-12 tab-content">
+                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
+                                <h3 class="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-0">Mes produits</h3>
+                                <button id="add-product-btn"
+                                    class="bg-primary text-white px-3 py-2 sm:px-4 sm:py-2 !rounded-button hover:bg-opacity-90 transition text-sm sm:text-base">
+                                    <i class="ri-add-line mr-1 sm:mr-2"></i>Ajouter un produit
+                                </button>
+                            </div>
+
+                            <!-- Formulaire Ajout Produit -->
+                            <div class="bg-white rounded-lg shadow p-3 sm:p-4 mb-6 hidden" id="product-form">
+                                <form class="space-y-4" id="product-form-html">
+                                    <!-- Form fields are already using w-full and grid for some responsiveness -->
+                                    <!-- Consider label font sizes and input padding for smaller screens -->
+                                    <div class="grid md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label for="product-name"
+                                                class="block text-sm text-gray-700 mb-1 sm:mb-2">Nom du produit</label>
+                                            <input type="text" id="product-name" name="product-name" required
+                                                class="w-full px-3 py-2 sm:px-4 sm:py-2 border border-gray-300 rounded-lg focus:border-primary focus:ring-1 focus:ring-primary text-sm">
+                                        </div>
+                                        <div>
+                                            <label for="product-category"
+                                                class="block text-sm text-gray-700 mb-1 sm:mb-2">Catégorie</label>
+                                            <select id="product-category" name="product-category" required
+                                                class="w-full px-3 py-2 sm:px-4 sm:py-2 border border-gray-300 rounded-lg focus:border-primary focus:ring-1 focus:ring-primary text-sm">
+                                                <option value="">Sélectionner une catégorie</option>
+                                                <option value="legumes">Légumes</option>
+                                                <option value="fruits">Fruits</option>
+                                                <option value="produits_laitiers">Produits laitiers</option>
+                                                <option value="cereales">Céréales</option>
+                                                <option value="viande">Viande</option>
+                                                <option value="autre">Autre</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <!-- Other form fields: ensure padding and text size are responsive -->
+                                    <div class="grid md:grid-cols-3 gap-4">
+                                        <div>
+                                            <label for="product-price"
+                                                class="block text-sm text-gray-700 mb-1 sm:mb-2">Prix (FCFA)</label>
+                                            <input type="number" id="product-price" name="product-price" required
+                                                min="0" step="any"
+                                                class="w-full px-3 py-2 sm:px-4 sm:py-2 border border-gray-300 rounded-lg focus:border-primary focus:ring-1 focus:ring-primary text-sm">
+                                        </div>
+                                        <div>
+                                            <label for="product-unit"
+                                                class="block text-sm text-gray-700 mb-1 sm:mb-2">Unité</label>
+                                            <input type="text" id="product-unit" name="product-unit" required
+                                                placeholder="kg, pièce..."
+                                                class="w-full px-3 py-2 sm:px-4 sm:py-2 border border-gray-300 rounded-lg focus:border-primary focus:ring-1 focus:ring-primary text-sm">
+                                        </div>
+                                        <div>
+                                            <label for="product-quantity-value"
+                                                class="block text-sm text-gray-700 mb-1 sm:mb-2">Stock</label>
+                                            <input type="number" id="product-quantity-value"
+                                                name="product-quantity-value" required min="0"
+                                                class="w-full px-3 py-2 sm:px-4 sm:py-2 border border-gray-300 rounded-lg focus:border-primary focus:ring-1 focus:ring-primary text-sm">
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label for="product-description"
+                                            class="block text-sm text-gray-700 mb-1 sm:mb-2">Description</label>
+                                        <textarea id="product-description" name="product-description" rows="3"
+                                            class="w-full px-3 py-2 sm:px-4 sm:py-2 border border-gray-300 rounded-lg focus:border-primary focus:ring-1 focus:ring-primary text-sm"></textarea>
+                                    </div>
+                                    <div>
+                                        <label for="product-image-file"
+                                            class="block text-sm text-gray-700 mb-1 sm:mb-2">Image</label>
+                                        <img id="product-image-preview" src="#" alt="Aperçu de l'image"
+                                            class="my-2 max-h-48 w-auto object-contain rounded-lg hidden" />
+                                        <input type="file" id="product-image-file" name="product-image-file"
+                                            accept="image/*"
+                                            class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-button file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20">
+                                    </div>
+                                    <button type="submit" id="save-product-button"
+                                        class="bg-primary text-white px-4 py-2 sm:px-6 sm:py-2 !rounded-button hover:bg-opacity-90 transition text-sm sm:text-base">
+                                        Enregistrer
+                                    </button>
+                                </form>
+                            </div>
+
+                            <!-- Liste des Produits -->
+                            <div id="products-grid"
+                                class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+                                <!-- Products will be populated by JavaScript -->
+                            </div>
+                        </div>
+
+                        <!-- Section Commandes (Historique des commandes) -->
+                        <div id="commandes-content" class="mb-12 tab-content">
+                            <div class="bg-white rounded-lg shadow p-3 sm:p-6 mb-8">
+                                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
+                                    <h3 class="text-lg sm:text-xl font-semibold mb-2 sm:mb-0">🛒 Historique des
+                                        commandes</h3>
+                                    <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                                        <input type="date"
+                                            class="border rounded px-2 py-1.5 text-xs sm:text-sm w-full sm:w-auto">
+                                        <select class="border rounded px-2 py-1.5 text-xs sm:text-sm w-full sm:w-auto">
+                                            <option>Tous les statuts</option>
+                                            <option>Livré</option>
+                                            <option>En cours</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="overflow-x-auto">
+                                    <table class="w-full min-w-[600px]">
+                                        <thead>
+                                            <tr class="text-left text-xs sm:text-sm text-gray-500 border-b">
+                                                <th class="p-2 font-medium">Client</th>
+                                                <th class="p-2 font-medium hidden md:table-cell">Produits</th>
+                                                <!-- Masqué sur plus petits écrans que md -->
+                                                <th class="p-2 font-medium">Montant</th>
+                                                <th class="p-2 font-medium">Statut</th>
+                                                <th class="p-2 font-medium"></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="orders-tbody" class="text-xs sm:text-sm">
+                                            <!-- Les lignes de commandes seront injectées ici par JS -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Section Livraisons -->
+                        <div id="livraisons-content" class="mb-12 tab-content">
+                            <h3 class="text-xl sm:text-2xl font-bold text-gray-900 mb-6">Suivi des livraisons</h3>
+                            <div class="bg-white rounded-lg shadow p-3 sm:p-6 mb-8">
+                                <div class="overflow-x-auto">
+                                    <table class="w-full min-w-[600px]">
+                                        <thead>
+                                            <tr class="text-left text-xs sm:text-sm text-gray-500 border-b">
+                                                <th class="p-2 font-medium">Numéro</th>
+                                                <th class="p-2 font-medium">Client</th>
+                                                <th class="p-2 font-medium hidden sm:table-cell">Date estimée</th>
+                                                <th class="p-2 font-medium">Statut</th>
+                                                <th class="p-2 font-medium">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="deliveries-tbody" class="text-xs sm:text-sm">
+                                            <!-- Delivery rows will be populated by JavaScript -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Section Statistiques -->
+                        <div id="statistiques-content" class="mb-12 tab-content">
+                            <h3 class="text-xl sm:text-2xl font-bold text-gray-900 mb-6">Statistiques</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                                <div class="bg-white rounded-lg shadow p-3 sm:p-4">
+                                    <h4 class="font-semibold mb-2 sm:mb-4 text-sm sm:text-base">Commandes Totales</h4>
+                                    <p class="text-2xl sm:text-3xl font-bold text-primary" id="stat-orders-count">0</p>
+                                </div>
+                                <div class="bg-white rounded-lg shadow p-3 sm:p-4">
+                                    <h4 class="font-semibold mb-2 sm:mb-4 text-sm sm:text-base">Ventes Totales</h4>
+                                    <p class="text-2xl sm:text-3xl font-bold text-primary" id="stat-sales-amount">0 FCFA
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Section Paramètres -->
+                        <div id="parametres-content" class="mb-12 tab-content">
+                            <h3 class="text-xl sm:text-2xl font-bold text-gray-900 mb-6">Paramètres du compte producteur
+                            </h3>
+
+                            <!-- Formulaire Informations du Profil Producteur -->
+                            <div class="bg-white rounded-lg shadow p-4 sm:p-6 mb-8">
+                                <h4 class="text-lg font-semibold text-gray-800 mb-4">Informations de la ferme</h4>
+                                <form id="producer-profile-form" class="space-y-4">
+                                    <div>
+                                        <label for="settings-farm-name"
+                                            class="block text-sm font-medium text-gray-700">Nom de la ferme</label>
+                                        <input type="text" name="farm_name" id="settings-farm-name"
+                                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+                                            placeholder="Ex: La Ferme Enchantée">
+                                    </div>
+                                    <div>
+                                        <label for="settings-description"
+                                            class="block text-sm font-medium text-gray-700">Description</label>
+                                        <textarea name="description" id="settings-description" rows="3"
+                                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+                                            placeholder="Courte description de votre ferme et de vos produits..."></textarea>
+                                    </div>
+                                    <div>
+                                        <label for="settings-address"
+                                            class="block text-sm font-medium text-gray-700">Adresse</label>
+                                        <input type="text" name="address" id="settings-address"
+                                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+                                            placeholder="123 Rue des Champs, Villagedoux">
+                                    </div>
+                                    <div>
+                                        <label for="settings-phone"
+                                            class="block text-sm font-medium text-gray-700">Numéro de téléphone</label>
+                                        <input type="tel" name="phone_number" id="settings-phone"
+                                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+                                            placeholder="+33 6 12 34 56 78">
+                                    </div>
+                                    <div>
+                                        <label for="settings-profile-picture"
+                                            class="block text-sm font-medium text-gray-700">Photo de profil / Logo
+                                            (URL)</label>
+                                        <input type="url" name="profile_picture_url" id="settings-profile-picture"
+                                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+                                            placeholder="https://example.com/logo.png">
+                                        <img id="settings-profile-preview" src="#" alt="Aperçu du logo"
+                                            class="mt-2 max-h-32 w-auto object-contain rounded hidden" />
+                                        <!-- Optionnel: input type="file" pour uploader directement -->
+                                    </div>
+                                    <div class="flex justify-end">
+                                        <button type="submit" id="save-producer-profile-button"
+                                            class="bg-primary text-white px-4 py-2 !rounded-button hover:bg-opacity-90 transition">
+                                            Enregistrer les informations
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <!-- Formulaire Changement de Mot de Passe -->
+                            <div class="bg-white rounded-lg shadow p-4 sm:p-6">
+                                <h4 class="text-lg font-semibold text-gray-800 mb-4">Changer le mot de passe</h4>
+                                <form id="change-password-form" class="space-y-4">
+                                    <div>
+                                        <label for="settings-current-password"
+                                            class="block text-sm font-medium text-gray-700">Mot de passe actuel</label>
+                                        <input type="password" name="current_password" id="settings-current-password"
+                                            required
+                                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
+                                    </div>
+                                    <div>
+                                        <label for="settings-new-password"
+                                            class="block text-sm font-medium text-gray-700">Nouveau mot de passe</label>
+                                        <input type="password" name="new_password" id="settings-new-password" required
+                                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
+                                    </div>
+                                    <div>
+                                        <label for="settings-confirm-password"
+                                            class="block text-sm font-medium text-gray-700">Confirmer le nouveau mot de
+                                            passe</label>
+                                        <input type="password" name="confirm_new_password"
+                                            id="settings-confirm-password" required
+                                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
+                                    </div>
+                                    <div class="flex justify-end">
+                                        <button type="submit" id="change-password-button"
+                                            class="bg-secondary text-white px-4 py-2 !rounded-button hover:bg-opacity-90 transition">
+                                            Changer le mot de passe
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
-        </section>
+            </div>
+    </section>
     <!-- ############################################### -->
 
-    
-    
-    
+
+
+
     <!-- Call to Action -->
-    <section class="py-16 bg-primary/10">
+    <!-- <section class="py-16 bg-primary/10">
         <div class="container mx-auto px-4 text-center">
             <h2 class="text-3xl font-bold text-gray-900 mb-4">Prêt à moderniser votre activité agricole ?</h2>
-            <p class="text-gray-600 max-w-2xl mx-auto mb-8">Rejoignez notre plateforme et découvrez comment la technologie
+            <p class="text-gray-600 max-w-2xl mx-auto mb-8">Rejoignez notre plateforme et découvrez comment la
+                technologie
                 peut transformer votre exploitation agricole.</p>
             <div class="flex flex-col sm:flex-row gap-4 justify-center">
                 <a href="#"
@@ -694,10 +757,10 @@
                     l'application</a>
             </div>
         </div>
-    </section>
-    
+    </section> -->
+
     <!-- Footer -->
-    <footer class="bg-gray-800 text-white py-12">
+    <!-- <footer class="bg-gray-800 text-white py-12">
         <div class="container mx-auto px-4">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
                 <div>
@@ -719,7 +782,7 @@
                         </a>
                     </div>
                 </div>
-    
+
                 <div>
                     <h3 class="text-lg font-semibold mb-4">Liens rapides</h3>
                     <ul class="space-y-2">
@@ -731,7 +794,7 @@
                         <li><a href="#" class="text-gray-400 hover:text-white transition">Contact</a></li>
                     </ul>
                 </div>
-    
+
                 <div>
                     <h3 class="text-lg font-semibold mb-4">Support</h3>
                     <ul class="space-y-2">
@@ -742,7 +805,7 @@
                         <li><a href="#" class="text-gray-400 hover:text-white transition">Support technique</a></li>
                     </ul>
                 </div>
-    
+
                 <div>
                     <h3 class="text-lg font-semibold mb-4">Newsletter</h3>
                     <p class="text-gray-400 mb-4">Recevez nos actualités et offres spéciales.</p>
@@ -763,56 +826,63 @@
                     </div>
                 </div>
             </div>
-    
+
             <div class="border-t border-gray-700 mt-10 pt-6 flex flex-col md:flex-row justify-between items-center">
                 <p class="text-gray-400 text-sm mb-4 md:mb-0">© 2025 Agritech. Tous droits réservés.</p>
                 <div class="flex space-x-4">
-                    <a href="#" class="text-gray-400 hover:text-white text-sm transition">Politique de confidentialité</a>
+                    <a href="#" class="text-gray-400 hover:text-white text-sm transition">Politique de
+                        confidentialité</a>
                     <a href="#" class="text-gray-400 hover:text-white text-sm transition">Conditions d'utilisation</a>
                     <a href="#" class="text-gray-400 hover:text-white text-sm transition">Mentions légales</a>
                 </div>
             </div>
         </div>
-    </footer>
-    
+    </footer> -->
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-                const tabs = document.querySelectorAll('.nav-tab');
-                const contents = document.querySelectorAll('.tab-content');
+            // Gestion des onglets
+            const tabs = document.querySelectorAll('.nav-tab');
+            const contents = document.querySelectorAll('.tab-content');
 
-                function activateTab(targetId) {
-                    // Désactiver toutes les sections
-                    contents.forEach(content => content.classList.remove('active'));
+            function activateTab(targetId) {
+                contents.forEach(content => content.classList.remove('active'));
+                tabs.forEach(tab => tab.classList.remove('active-tab', 'bg-primary/20'));
+                const targetContent = document.getElementById(targetId);
+                if (targetContent) targetContent.classList.add('active');
+                const activeTab = document.querySelector(`.nav-tab[data-target="${targetId}"]`);
+                if (activeTab) activeTab.classList.add('active-tab', 'bg-primary/20');
+            }
 
-                    // Désactiver tous les onglets
-                    tabs.forEach(tab => tab.classList.remove('active-tab', 'bg-primary/20'));
-
-                    // Activer la section cible
-                    const targetContent = document.getElementById(targetId);
-                    if (targetContent) targetContent.classList.add('active');
-
-                    // Activer l'onglet cliqué
-                    const activeTab = document.querySelector(`.nav-tab[data-target="${targetId}"]`);
-                    if (activeTab) activeTab.classList.add('active-tab', 'bg-primary/20');
-                }
-
-                // Gestionnaire de clic pour les onglets
-                tabs.forEach(tab => {
-                    tab.addEventListener('click', function (e) {
-                        e.preventDefault();
-                        const targetId = this.dataset.target;
-                        activateTab(targetId);
-                    });
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const targetId = this.dataset.target;
+                    activateTab(targetId);
                 });
-
-                // Activer l'onglet par défaut au chargement
-                activateTab('dashboard');
             });
-        
-        document.addEventListener('DOMContentLoaded', function () {
-            // Sales Chart
-            var salesChartDom = document.getElementById('salesChart');
+
+            // Activation de l'onglet initial (corrigé)
+            const initialTab = document.querySelector('.nav-tab.active-tab');
+            if (initialTab) {
+                activateTab(initialTab.dataset.target);
+            } else if (tabs.length > 0) {
+                activateTab(tabs[0].dataset.target);
+            }
+
+            // Gestion du formulaire produit (affichage/masquage)
+            const addProductBtn = document.querySelector('#mes-produits button');
+            if (addProductBtn) {
+                addProductBtn.addEventListener('click', () => {
+                    const form = document.getElementById('product-form');
+                    if (form) form.classList.toggle('hidden');
+                });
+            }
+
+            // Initialisation des graphiques ECharts
+            // Ventes mensuelles (dashboard) - CORRECTION ID: 'sales-chart'
+            var salesChartDom = document.getElementById('sales-chart');
             if (salesChartDom) {
                 var salesChart = echarts.init(salesChartDom);
                 var salesOption = {
@@ -822,70 +892,38 @@
                         backgroundColor: 'rgba(255, 255, 255, 0.8)',
                         borderColor: '#eee',
                         borderWidth: 1,
-                        textStyle: {
-                            color: '#1f2937'
-                        }
+                        textStyle: { color: '#1f2937' }
                     },
-                    grid: {
-                        left: '3%',
-                        right: '4%',
-                        bottom: '3%',
-                        top: '3%',
-                        containLabel: true
-                    },
+                    grid: { left: '3%', right: '4%', bottom: '3%', top: '3%', containLabel: true },
                     xAxis: {
                         type: 'category',
                         boundaryGap: false,
                         data: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'],
-                        axisLine: {
-                            lineStyle: {
-                                color: '#ddd'
-                            }
-                        },
-                        axisLabel: {
-                            color: '#1f2937'
-                        }
+                        axisLine: { lineStyle: { color: '#ddd' } },
+                        axisLabel: { color: '#1f2937' }
                     },
                     yAxis: {
                         type: 'value',
-                        axisLine: {
-                            show: false
-                        },
-                        axisLabel: {
-                            color: '#1f2937'
-                        },
-                        splitLine: {
-                            lineStyle: {
-                                color: '#eee'
-                            }
-                        }
+                        axisLine: { show: false },
+                        axisLabel: { color: '#1f2937' },
+                        splitLine: { lineStyle: { color: '#eee' } }
                     },
                     series: [
                         {
                             name: 'Ventes',
                             type: 'line',
                             smooth: true,
-                            lineStyle: {
-                                width: 3,
-                                color: 'rgba(87, 181, 231, 1)'
-                            },
+                            lineStyle: { width: 3, color: 'rgba(87, 181, 231, 1)' },
                             areaStyle: {
                                 color: {
-                                    type: 'linear',
-                                    x: 0,
-                                    y: 0,
-                                    x2: 0,
-                                    y2: 1,
-                                    colorStops: [{
-                                        offset: 0, color: 'rgba(87, 181, 231, 0.2)'
-                                    }, {
-                                        offset: 1, color: 'rgba(87, 181, 231, 0.05)'
-                                    }]
+                                    type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
+                                    colorStops: [
+                                        { offset: 0, color: 'rgba(87, 181, 231, 0.2)' },
+                                        { offset: 1, color: 'rgba(87, 181, 231, 0.05)' }
+                                    ]
                                 }
                             },
-                            emphasis: {
-                                focus: 'series'
-                            },
+                            emphasis: { focus: 'series' },
                             showSymbol: false,
                             data: [1200, 1350, 1800, 2100, 1950, 2300, 2450, 2800, 3100, 3450, 3800, 4200]
                         },
@@ -893,44 +931,30 @@
                             name: 'Commandes',
                             type: 'line',
                             smooth: true,
-                            lineStyle: {
-                                width: 3,
-                                color: 'rgba(141, 211, 199, 1)'
-                            },
+                            lineStyle: { width: 3, color: 'rgba(141, 211, 199, 1)' },
                             areaStyle: {
                                 color: {
-                                    type: 'linear',
-                                    x: 0,
-                                    y: 0,
-                                    x2: 0,
-                                    y2: 1,
-                                    colorStops: [{
-                                        offset: 0, color: 'rgba(141, 211, 199, 0.2)'
-                                    }, {
-                                        offset: 1, color: 'rgba(141, 211, 199, 0.05)'
-                                    }]
+                                    type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
+                                    colorStops: [
+                                        { offset: 0, color: 'rgba(141, 211, 199, 0.2)' },
+                                        { offset: 1, color: 'rgba(141, 211, 199, 0.05)' }
+                                    ]
                                 }
                             },
-                            emphasis: {
-                                focus: 'series'
-                            },
+                            emphasis: { focus: 'series' },
                             showSymbol: false,
                             data: [50, 65, 85, 95, 90, 110, 120, 135, 150, 165, 180, 195]
                         }
                     ]
                 };
                 salesChart.setOption(salesOption);
-
-                window.addEventListener('resize', function () {
-                    salesChart.resize();
-                });
+                window.addEventListener('resize', function () { salesChart.resize(); });
             }
-        });
-        // Scripts pour les graphiques
-            document.addEventListener('DOMContentLoaded', function () {
-                // Graphique des ventes
-                const salesChart = echarts.init(document.getElementById('sales-chart'));
-                salesChart.setOption({
+            // Statistiques (section Statistiques)
+            var salesChart2 = document.getElementById('sales-chart');
+            if (salesChart2) {
+                var salesChartInstance = echarts.init(salesChart2);
+                salesChartInstance.setOption({
                     xAxis: { type: 'category', data: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin'] },
                     yAxis: { type: 'value' },
                     series: [{
@@ -940,10 +964,11 @@
                         color: '#4CAF50'
                     }]
                 });
-
-                // Graphique circulaire
-                const productsChart = echarts.init(document.getElementById('products-chart'));
-                productsChart.setOption({
+            }
+            var productsChart = document.getElementById('products-chart');
+            if (productsChart) {
+                var productsChartInstance = echarts.init(productsChart);
+                productsChartInstance.setOption({
                     tooltip: { trigger: 'item' },
                     series: [{
                         type: 'pie',
@@ -957,15 +982,64 @@
                         color: ['#4CAF50', '#FF9800', '#8BC34A', '#CDDC39']
                     }]
                 });
+            }
 
-                // Gestion du formulaire produit
-                document.querySelector('button').addEventListener('click', () => {
-                    document.getElementById('product-form').classList.toggle('hidden');
-                });
-
-                
-            });
+            // ... Injection de données factices pour tester l'affichage ---
+            // Commandes
+            const orders = [
+                { client: 'Alice Dupont', produits: 'Tomates, Salades', montant: '5 000 FCFA', statut: 'Livré' },
+                { client: 'Bob Martin', produits: 'Pommes, Carottes', montant: '3 200 FCFA', statut: 'En cours' }
+            ];
+            const ordersTbody = document.getElementById('orders-tbody');
+            if (ordersTbody) {
+                ordersTbody.innerHTML = orders.map(order => `
+                <tr class="border-t border-gray-100">
+                    <td class="py-3">${order.client}</td>
+                    <td class="py-3">${order.produits}</td>
+                    <td class="py-3">${order.montant}</td>
+                    <td class="py-3"><span class="px-2 py-1 ${order.statut === 'Livré' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'} rounded text-xs">${order.statut}</span></td>
+                    <td class="py-3"><button class="text-primary hover:text-primary-dark">Détails</button></td>
+                </tr>
+            `).join('');
+            }
+            // Livraisons
+            const deliveries = [
+                { numero: 'LIV001', client: 'Alice Dupont', date: '2024-06-01', statut: 'Livré' },
+                { numero: 'LIV002', client: 'Bob Martin', date: '2024-06-02', statut: 'En cours' }
+            ];
+            const deliveriesTbody = document.getElementById('deliveries-tbody');
+            if (deliveriesTbody) {
+                deliveriesTbody.innerHTML = deliveries.map(delivery => `
+                <tr class="border-t border-gray-100">
+                    <td class="py-3">${delivery.numero}</td>
+                    <td class="py-3">${delivery.client}</td>
+                    <td class="py-3">${delivery.date}</td>
+                    <td class="py-3"><span class="px-2 py-1 ${delivery.statut === 'Livré' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'} rounded text-xs">${delivery.statut}</span></td>
+                    <td class="py-3"><button class="text-primary hover:text-primary-dark">Détails</button></td>
+                </tr>
+            `).join('');
+            }
+            // Statistiques
+            const statOrders = document.getElementById('stat-orders-count');
+            const statSales = document.getElementById('stat-sales-amount');
+            if (statOrders) statOrders.textContent = '152';
+            if (statSales) statSales.textContent = '1 250 000 FCFA';
+            // --- Fin injection données ---
+        });
     </script>
-    </body>
-    
-    </html>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+
+            if (mobileMenuButton && mobileMenu) {
+                mobileMenuButton.addEventListener('click', function () {
+                    mobileMenu.classList.toggle('hidden');
+                });
+            }
+        });
+    </script>
+
+</body>
+
+</html>

@@ -1,7 +1,7 @@
 // Fonction pour vérifier l'état de l'authentification
 async function checkAuth() {
     try {
-        const response = await fetch('/auth/process.php?action=check_auth');
+        const response = await fetch('/agriflow/auth/process.php?action=check_auth');
         const data = await response.json();
         return data;
     } catch (error) {
@@ -156,9 +156,9 @@ function showError(message) {
 
 // Gestion de la déconnexion
 function logout() {
-    fetch('/auth/process.php?action=logout')
+    fetch('/agriflow/auth/process.php?action=logout')
         .then(() => {
-            window.location.href = '/index.html';
+            window.location.href = '/agriflow/index.html'; // Assurer la cohérence du chemin
         })
         .catch(error => {
             console.error('Erreur de déconnexion:', error);

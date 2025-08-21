@@ -26,29 +26,40 @@ document.addEventListener('DOMContentLoaded', function () {
     function checkAuthState() {
         const user = JSON.parse(localStorage.getItem('user'));
         if (user && user.email) {
-            authButtons.classList.add('hidden');
-            userProfile.classList.remove('hidden');
-            userEmail.textContent = user.email;
-
+            if (authButtons) authButtons.classList.add('hidden');
+            if (userProfile) userProfile.classList.remove('hidden');
+            // Affichage dynamique du nom (ferme ou client)
+            let displayName = user.farm_name ? user.farm_name : user.email;
+            if (user.role === 'client' && user.delivery_address) {
+                displayName = user.email + ' (' + user.delivery_address + ')';
+            }
+            if (userEmail) userEmail.textContent = displayName;
+            // Affichage de la photo de profil si dispo
+            const profileImg = document.getElementById('profile-img');
+            if (profileImg) {
+                if (user.farm_photo_url) {
+                    profileImg.src = user.farm_photo_url;
+                } else {
+                    profileImg.src = 'https://readdy.ai/api/search-image?query=professional%20farmer%20portrait%2C%20close-up%20headshot%2C%20neutral%20background%2C%2040%20year%20old%20man&width=40&height=40&seq=3&orientation=squarish';
+                }
+            }
             // Gérer la redirection du tableau de bord en fonction du rôle
             const dashboardLink = document.getElementById('dashboard-link');
             if (dashboardLink) {
-                dashboardLink.addEventListener('click', function (e) {
+                dashboardLink.onclick = function (e) {
                     e.preventDefault();
                     const user = JSON.parse(localStorage.getItem('user'));
                     if (user && user.role) {
                         const dashboardUrl = user.role === 'producteur' ? '/agriflow/tableau-producteur.html' : '/agriflow/tableau-client.html';
-                        console.log('Redirection vers:', dashboardUrl);
                         window.location.replace(dashboardUrl);
                     } else {
                         window.location.replace('/agriflow/login.html');
                     }
-
-                });
+                };
             }
         } else {
-            authButtons.classList.remove('hidden');
-            userProfile.classList.add('hidden');
+            if (authButtons) authButtons.classList.remove('hidden');
+            if (userProfile) userProfile.classList.add('hidden');
         }
     }
 

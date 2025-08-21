@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS products (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX idx_producer (producer_id),
     INDEX idx_availability (is_available),
+    INDEX idx_is_bio (is_bio),
     FOREIGN KEY (producer_id) REFERENCES producers(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -146,7 +147,8 @@ CREATE TABLE users (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     last_login TIMESTAMP NULL DEFAULT NULL,
     is_active BOOLEAN DEFAULT true,
-    INDEX idx_user_role (role)
+    INDEX idx_user_role (role),
+    INDEX idx_user_is_active (is_active)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Table des producteurs

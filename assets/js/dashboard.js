@@ -227,14 +227,26 @@ const Dashboard = {
 
     // Mise à jour de l'affichage des statistiques
     updateDashboardStats(stats) {
-        document.getElementById('pending-orders').textContent = stats.pending_orders;
-        document.getElementById('ongoing-deliveries').textContent = stats.ongoing_deliveries;
-        document.getElementById('total-spent').textContent = this.formatPrice(stats.total_spent);
+        document.getElementById('pending-orders').textContent = (stats && stats.pending_orders != null) ? stats.pending_orders : 0;
+        document.getElementById('ongoing-deliveries').textContent = (stats && stats.ongoing_deliveries != null) ? stats.ongoing_deliveries : 0;
+        document.getElementById('total-spent').textContent = this.formatPrice((stats && stats.total_spent != null) ? stats.total_spent : 0);
     },
 
     // Mise à jour de la liste des commandes
     updateOrdersList(orders) {
         const container = document.getElementById('orders-list');
+        if (!orders || orders.length === 0) {
+            container.innerHTML = `
+                <div class="flex flex-col items-center justify-center py-10">
+                    <svg class="w-16 h-16 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 48 48">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M8 17v22a2 2 0 002 2h28a2 2 0 002-2V17M16 11V7a2 2 0 012-2h12a2 2 0 012 2v4M12 17h24" />
+                    </svg>
+                    <p class="text-gray-500 text-lg">Aucune commande reçue pour le moment.</p>
+                </div>
+            `;
+            return;
+        }
         container.innerHTML = orders.map(order => `
             <div class="order-item p-4 bg-white rounded-lg shadow-md mb-4">
                 <div class="flex justify-between items-center">
@@ -256,6 +268,18 @@ const Dashboard = {
     // Mise à jour de la liste des livraisons
     updateDeliveriesList(deliveries) {
         const container = document.getElementById('deliveries-list');
+        if (!deliveries || deliveries.length === 0) {
+            container.innerHTML = `
+                <div class="flex flex-col items-center justify-center py-10">
+                    <svg class="w-16 h-16 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 48 48">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 19V7a2 2 0 012-2h20a2 2 0 012 2v12M12 19h24M12 19v22a2 2 0 002 2h20a2 2 0 002-2V19" />
+                    </svg>
+                    <p class="text-gray-500 text-lg">Aucune livraison en cours.</p>
+                </div>
+            `;
+            return;
+        }
         container.innerHTML = deliveries.map(delivery => `
             <div class="delivery-item p-4 bg-white rounded-lg shadow-md mb-4">
                 <div class="flex justify-between items-center">
@@ -263,7 +287,7 @@ const Dashboard = {
                         <h3 class="text-lg font-semibold">Livraison #${delivery.tracking_number}</h3>
                         <p class="text-gray-600">
                             ${delivery.delivery_person_name ?
-                `Livreur: ${delivery.delivery_person_name}` : 'Livreur non assigné'}
+                                `Livreur: ${delivery.delivery_person_name}` : 'Livreur non assigné'}
                         </p>
                     </div>
                     <div class="text-right">
@@ -282,6 +306,18 @@ const Dashboard = {
     // Mise à jour de la liste des favoris
     updateFavoritesList(favorites) {
         const container = document.getElementById('favorites-list');
+        if (!favorites || favorites.length === 0) {
+            container.innerHTML = `
+                <div class="flex flex-col items-center justify-center py-10">
+                    <svg class="w-16 h-16 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 48 48">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M24 42s-1.74-1.32-4.12-3.36C10.6 31.36 4 25.28 4 18.5 4 12.7 8.7 8 14.5 8c3.54 0 6.54 2.54 7.5 6.09C23.96 10.54 26.96 8 30.5 8 36.3 8 41 12.7 41 18.5c0 6.78-6.6 12.86-15.88 20.14C25.74 40.68 24 42 24 42z" />
+                    </svg>
+                    <p class="text-gray-500 text-lg">Aucun favori pour le moment.</p>
+                </div>
+            `;
+            return;
+        }
         container.innerHTML = favorites.map(favorite => `
             <div class="favorite-item p-4 bg-white rounded-lg shadow-md mb-4">
                 <div class="flex items-center">
